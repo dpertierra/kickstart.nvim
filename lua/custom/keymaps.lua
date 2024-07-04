@@ -1,0 +1,7 @@
+vim.keymap.set('n', '<Tab>', '>>_', { desc = 'Indent with tab' })
+vim.keymap.set('n', '<S-Tab>', '<<_', { desc = 'Unindent with shift tab' })
+vim.keymap.set('v', '<Tab>', '>', { desc = 'Indent with tab' })
+vim.keymap.set('v', '<S-Tab>', '<', { desc = 'Unindent with shift tab' })
+vim.keymap.set('n', '<C-lt>', '<Plug>(comment_toggle_linewise_current)')
+vim.keymap.set('x', '<C-lt>', '<Plug>(comment_toggle_linewise_visual)')
+vim.keymap.set('i', '<C-lt>', '<Esc><Plug>(comment_toggle_linewise_current)', { remap = true })
