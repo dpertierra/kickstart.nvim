@@ -17,7 +17,8 @@ return {
   opts = {
     window = {
       mappings = {
-        -- ['\\'] = 'close_window',
+        ['\\'] = 'close_window',
+        ['<C-b>'] = 'close_window',
         ['<space>'] = {
           'toggle_node',
           nowait = false, -- disable `nowait` if you have existing combos starting with this char that you want to use
@@ -25,6 +26,7 @@ return {
         ['<2-LeftMouse>'] = 'open',
         ['<cr>'] = 'open',
         ['<esc>'] = 'cancel', -- close preview or floating neo-tree window
+        ['<C-cr>'] = 'open',
         ['P'] = { 'toggle_preview', config = { use_float = true, use_image_nvim = true } },
         -- Read `# Preview Mode` for more information
         ['l'] = 'focus_preview',
