@@ -60,54 +60,6 @@ return {
       require('colorizer').setup {}
     end,
   },
-  {
-    'gelguy/wilder.nvim',
-    build = ':UpdateRemotePlugins',
-    keys = { '/', '?', ':' },
-    config = function()
-      local wilder = require 'wilder'
-      wilder.setup {
-        modes = { ':', '/', '?' },
-        next_key = '<Down>',
-        previous_key = '<Up>',
-        accept_key = '<CR>',
-        reject_key = '<Esc>',
-      }
-      wilder.set_option('pipeline', {
-        wilder.branch(
-          wilder.python_file_finder_pipeline {
-            -- to use ripgrep : {'rg', '--files'}
-            -- to use fd      : {'fd', '-tf'}
-            file_command = { 'find', '.', '-type', 'f', '-printf', '%P\n' },
-            -- to use fd      : {'fd', '-td'}
-            dir_command = { 'find', '.', '-type', 'd', '-printf', '%P\n' },
-            -- use {'cpsm_filter'} for performance, requires cpsm vim plugin
-            -- found at https://github.com/nixprime/cpsm
-            filters = { 'fuzzy_filter', 'difflib_sorter' },
-          },
-          wilder.cmdline_pipeline(),
-          wilder.python_search_pipeline()
-        ),
-      })
-      wilder.set_option(
-        'renderer',
-        wilder.popupmenu_renderer {
-          -- highlighter applies highlighting to the candidates
-          highlighter = wilder.basic_highlighter(),
-          left = { ' ', wilder.popupmenu_devicons() },
-          right = { ' ', wilder.popupmenu_scrollbar() },
-          -- wilder.popupmenu_border_theme {
-          --   highlights = {
-          --     border = 'Normal', -- highlight to use for the border
-          --   },
-          --   -- 'single', 'double', 'rounded' or 'solid'
-          --   -- can also be a list of 8 characters, see :h wilder#popupmenu_border_theme() for more details
-          --   border = 'rounded',
-          -- },
-        }
-      )
-    end,
-  },
   { 'stevearc/dressing.nvim' },
   {
     'gbprod/yanky.nvim',
@@ -167,5 +119,97 @@ return {
     --     blacklist = { 'c', 'cpp' },
     --   }
     -- end,
+  },
+  {
+    'folke/noice.nvim',
+    event = 'VeryLazy',
+    opts = {
+      -- add any options here
+    },
+    dependencies = {
+      -- if you lazy-load any plugin below, make sure to add proper `module="..."` entries
+      'MunifTanjim/nui.nvim',
+      -- OPTIONAL:
+      --   `nvim-notify` is only needed, if you want to use the notification view.
+      --   If not available, we use `mini` as the fallback
+      'rcarriga/nvim-notify',
+    },
+    config = function()
+      require('noice').setup {
+        lsp = {
+          -- override markdown rendering so that **cmp** and other plugins use **Treesitter**
+          override = {
+            ['vim.lsp.util.convert_input_to_markdown_lines'] = true,
+            ['vim.lsp.util.stylize_markdown'] = true,
+            ['cmp.entry.get_documentation'] = true, -- requires hrsh7th/nvim-cmp
+          },
+        },
+        -- you can enable a preset for easier configuration
+        presets = {
+          bottom_search = true, -- use a classic bottom cmdline for search
+          command_palette = true, -- position the cmdline and popupmenu together
+          long_message_to_split = true, -- long messages will be sent to a split
+          inc_rename = false, -- enables an input dialog for inc-rename.nvim
+          lsp_doc_border = false, -- add a border to hover docs and signature help
+        },
+        views = {
+          cmdline_popup = {
+            position = {
+              row = 5,
+              col = '50%',
+            },
+            size = {
+              width = 60,
+              height = 'auto',
+            },
+          },
+          popupmenu = {
+            relative = 'editor',
+            position = {
+              row = 8,
+              col = '50%',
+            },
+            size = {
+              width = 60,
+              height = 10,
+            },
+            border = {
+              style = 'rounded',
+              padding = { 0, 1 },
+            },
+            win_options = {
+              winhighlight = { Normal = 'Normal', FloatBorder = 'DiagnosticInfo' },
+            },
+          },
+        },
+      }
+    end,
+  },
+  {
+    'NeogitOrg/neogit',
+    dependencies = {
+      'nvim-lua/plenary.nvim', -- required
+      'sindrets/diffview.nvim', -- optional - Diff integration
+
+      -- Only one of these is needed, not both.
+      'nvim-telescope/telescope.nvim', -- optional
+      'ibhagwan/fzf-lua', -- optional
+    },
+    config = true,
+  },
+  {
+    'folke/trouble.nvim',
+    dependencies = { 'nvim-tree/nvim-web-devicons', 'folke/todo-comments.nvim' },
+    opts = {
+      focus = true,
+    },
+    cmd = 'Trouble',
+    keys = {
+      { '<leader>xw', '<cmd>Trouble diagnostics toggle<CR>', desc = 'Open trouble workspace diagnostics' },
+      { '<leader>xd', '<cmd>Trouble diagnostics toggle filter.buf=0<CR>', desc = 'Open trouble document diagnostics' },
+      { '<leader>xq', '<cmd>Trouble quickfix toggle<CR>', desc = 'Open trouble quickfix list' },
+      { '<leader>xl', '<cmd>Trouble loclist toggle<CR>', desc = 'Open trouble location list' },
+      { '<leader>xt', '<cmd>Trouble todo toggle<CR>', desc = 'Open todos in trouble' },
+    },
   },
 }
