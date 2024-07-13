@@ -26,14 +26,12 @@ return {
     end,
   },
   {
-    'pocco81/auto-save.nvim',
-    enabled = true,
-    execution_message = {
-      message = function() -- message to print on save
-        return ('AutoSave: saved at ' .. vim.fn.strftime '%H:%M:%S')
-      end,
-      dim = 0.18, -- dim the color of `message`
-      cleaning_interval = 1250, -- (milliseconds) automatically clean MsgArea after displaying `message`. See :h MsgArea
+    'okuuva/auto-save.nvim',
+    cmd = 'ASToggle', -- optional for lazy loading on command
+    event = { 'InsertLeave', 'TextChanged' }, -- optional for lazy loading on trigger events
+    opts = {
+      -- your config goes here
+      -- or just leave it empty :)
     },
   },
   {
@@ -68,7 +66,7 @@ return {
       require 'config.yanky'
     end,
   },
-  { 'michaeljsmith/vim-indent-object', event = 'VeryLazy' },
+  -- { 'michaeljsmith/vim-indent-object', event = 'VeryLazy' },
   {
     'Exafunction/codeium.vim',
     event = 'BufEnter',
@@ -186,16 +184,23 @@ return {
     end,
   },
   {
-    'NeogitOrg/neogit',
-    dependencies = {
-      'nvim-lua/plenary.nvim', -- required
-      'sindrets/diffview.nvim', -- optional - Diff integration
-
-      -- Only one of these is needed, not both.
-      'nvim-telescope/telescope.nvim', -- optional
-      'ibhagwan/fzf-lua', -- optional
+    'kdheepak/lazygit.nvim',
+    cmd = {
+      'LazyGit',
+      'LazyGitConfig',
+      'LazyGitCurrentFile',
+      'LazyGitFilter',
+      'LazyGitFilterCurrentFile',
     },
-    config = true,
+    -- optional for floating window border decoration
+    dependencies = {
+      'nvim-lua/plenary.nvim',
+    },
+    -- setting the keybinding for LazyGit with 'keys' is recommended in
+    -- order to load the plugin when the command is run for the first time
+    keys = {
+      { '<leader>lg', '<cmd>LazyGit<cr>', desc = 'LazyGit' },
+    },
   },
   {
     'folke/trouble.nvim',
@@ -211,5 +216,58 @@ return {
       { '<leader>xl', '<cmd>Trouble loclist toggle<CR>', desc = 'Open trouble location list' },
       { '<leader>xt', '<cmd>Trouble todo toggle<CR>', desc = 'Open todos in trouble' },
     },
+  },
+  {
+    'akinsho/bufferline.nvim',
+    event = { 'BufEnter' },
+    -- cond = firenvim_not_active,
+    config = function()
+      require('bufferline').setup {
+        options = {
+          numbers = 'buffer_id',
+          close_command = 'bdelete! %d',
+          right_mouse_command = nil,
+          left_mouse_command = 'buffer %d',
+          middle_mouse_command = nil,
+          indicator = {
+            icon = '▎', -- this should be omitted if indicator style is not 'icon'
+            style = 'icon',
+          },
+          buffer_close_icon = '',
+          modified_icon = '●',
+          close_icon = '',
+          left_trunc_marker = '',
+          right_trunc_marker = '',
+          max_name_length = 18,
+          max_prefix_length = 15,
+          tab_size = 10,
+          diagnostics = false,
+          custom_filter = function(bufnr)
+            -- if the result is false, this buffer will be shown, otherwise, this
+            -- buffer will be hidden.
+
+            -- filter out filetypes you don't want to see
+            local exclude_ft = { 'qf', 'fugitive', 'git' }
+            local cur_ft = vim.bo[bufnr].filetype
+            local should_filter = vim.tbl_contains(exclude_ft, cur_ft)
+
+            if should_filter then
+              return false
+            end
+
+            return true
+          end,
+          show_buffer_icons = false,
+          show_buffer_close_icons = true,
+          show_close_icon = true,
+          show_tab_indicators = true,
+          persist_buffer_sort = true, -- whether or not custom sorted buffers should persist
+          separator_style = 'bar',
+          enforce_regular_tabs = false,
+          always_show_bufferline = true,
+          sort_by = 'id',
+        },
+      }
+    end,
   },
 }
